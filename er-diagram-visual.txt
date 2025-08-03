@@ -1,0 +1,247 @@
+PROJECT MANAGEMENT PLATFORM - ENTITY RELATIONSHIP DIAGRAM
+==========================================================
+
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                CORE ENTITIES                                   │
+└─────────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│     USERS       │    │     ROLES       │    │  USER_ROLES     │
+├─────────────────┤    ├─────────────────┤    ├─────────────────┤
+│ PK: id (UUID)   │    │ PK: id (UUID)   │    │ PK: id (UUID)   │
+│ UK: username    │    │ UK: name        │    │ FK: user_id     │
+│ UK: email       │    │ description     │    │ FK: role_id     │
+│ password_hash   │    │ permissions     │    │ FK: project_id  │
+│ first_name      │    │ created_at      │    │ created_at      │
+│ last_name       │    │ updated_at      │    └─────────────────┘
+│ avatar_url      │    └─────────────────┘              │
+│ phone           │              │                      │
+│ is_active       │              │                      │
+│ is_verified     │              │                      │
+│ last_login      │              │                      │
+│ created_at      │              │                      │
+│ updated_at      │              │                      │
+└─────────────────┘              │                      │
+         │                       │                      │
+         │                       │                      │
+         └───────────────────────┼──────────────────────┘
+                                 │
+                                 ▼
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                              PROJECT ENTITIES                                  │
+└─────────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│    PROJECTS     │    │   MILESTONES    │    │     TASKS       │
+├─────────────────┤    ├─────────────────┤    ├─────────────────┤
+│ PK: id (UUID)   │    │ PK: id (UUID)   │    │ PK: id (UUID)   │
+│ name            │    │ FK: project_id  │    │ FK: project_id  │
+│ description     │    │ name            │    │ FK: milestone_id│
+│ status          │    │ description     │    │ title           │
+│ priority        │    │ status          │    │ description     │
+│ start_date      │    │ start_date      │    │ status          │
+│ end_date        │    │ end_date        │    │ priority        │
+│ budget          │    │ FK: created_by  │    │ type            │
+│ FK: owner_id    │    │ created_at      │    │ estimated_hours │
+│ created_at      │    │ updated_at      │    │ actual_hours    │
+│ updated_at      │    └─────────────────┘    │ due_date        │
+└─────────────────┘              │            │ FK: assigned_to │
+         │                       │            │ FK: created_by  │
+         │                       │            │ FK: parent_task_id
+         │                       │            │ created_at      │
+         │                       │            │ updated_at      │
+         │                       │            └─────────────────┘
+         │                       │                      │
+         │                       │                      │
+         └───────────────────────┼──────────────────────┘
+                                 │                      │
+                                 ▼                      ▼
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                              CONTENT ENTITIES                                  │
+└─────────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│    COMMENTS     │    │   ATTACHMENTS   │    │   TIME_LOGS     │
+├─────────────────┤    ├─────────────────┤    ├─────────────────┤
+│ PK: id (UUID)   │    │ PK: id (UUID)   │    │ PK: id (UUID)   │
+│ content         │    │ filename        │    │ FK: user_id     │
+│ FK: user_id     │    │ original_filename│   │ FK: task_id     │
+│ FK: project_id  │    │ file_path       │    │ FK: project_id  │
+│ FK: task_id     │    │ file_size       │    │ description     │
+│ FK: milestone_id│    │ mime_type       │    │ hours_spent     │
+│ FK: parent_comment_id│ FK: user_id     │    │ date            │
+│ is_edited       │    │ FK: project_id  │    │ start_time      │
+│ created_at      │    │ FK: task_id     │    │ end_time        │
+│ updated_at      │    │ FK: milestone_id│    │ is_billable     │
+└─────────────────┘    │ FK: comment_id  │    │ created_at      │
+         │             │ created_at      │    │ updated_at      │
+         │             └─────────────────┘    └─────────────────┘
+         │                       │                      │
+         │                       │                      │
+         └───────────────────────┼──────────────────────┘
+                                 │                      │
+                                 ▼                      ▼
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                            RELATIONSHIP TABLES                                │
+└─────────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│ PROJECT_MEMBERS │    │ TASK_WATCHERS   │    │  NOTIFICATIONS  │
+├─────────────────┤    ├─────────────────┤    ├─────────────────┤
+│ PK: id (UUID)   │    │ PK: id (UUID)   │    │ PK: id (UUID)   │
+│ FK: project_id  │    │ FK: task_id     │    │ FK: user_id     │
+│ FK: user_id     │    │ FK: user_id     │    │ title           │
+│ joined_at       │    │ created_at      │    │ message         │
+└─────────────────┘    └─────────────────┘    │ type            │
+         │                       │            │ is_read         │
+         │                       │            │ related_entity_type
+         │                       │            │ related_entity_id
+         │                       │            │ created_at      │
+         │                       │            └─────────────────┘
+         │                       │                      │
+         │                       │                      │
+         └───────────────────────┼──────────────────────┘
+                                 │                      │
+                                 ▼                      ▼
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                            AUXILIARY TABLES                                   │
+└─────────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│  ACTIVITY_LOGS  │    │    SETTINGS     │    │   VIEWS         │
+├─────────────────┤    ├─────────────────┤    ├─────────────────┤
+│ PK: id (UUID)   │    │ PK: id (UUID)   │    │ project_summary │
+│ FK: user_id     │    │ FK: user_id     │    │ task_summary    │
+│ action          │    │ FK: project_id  │    │ user_activity   │
+│ entity_type     │    │ setting_key     │    └─────────────────┘
+│ entity_id       │    │ setting_value   │
+│ old_values      │    │ created_at      │
+│ new_values      │    │ updated_at      │
+│ ip_address      │    └─────────────────┘
+│ user_agent      │
+│ created_at      │
+└─────────────────┘
+
+RELATIONSHIP MAPPING
+====================
+
+1. USERS ↔ ROLES (Many-to-Many)
+   ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+   │    USERS    │────│ USER_ROLES  │────│    ROLES    │
+   └─────────────┘    └─────────────┘    └─────────────┘
+
+2. USERS ↔ PROJECTS (One-to-Many + Many-to-Many)
+   ┌─────────────┐    ┌─────────────┐
+   │    USERS    │────│   PROJECTS  │ (Ownership)
+   └─────────────┘    └─────────────┘
+         │                    │
+         └────────────────────┼─────────────────┐
+                              │                 │
+                              ▼                 ▼
+                     ┌─────────────┐    ┌─────────────┐
+                     │PROJECT_MEMBERS│   │ USER_ROLES  │
+                     └─────────────┘    └─────────────┘
+
+3. PROJECTS → MILESTONES → TASKS (Hierarchy)
+   ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+   │   PROJECTS  │────│  MILESTONES │────│    TASKS    │
+   └─────────────┘    └─────────────┘    └─────────────┘
+         │                    │                 │
+         └────────────────────┼─────────────────┘
+                              │
+                              ▼
+                     ┌─────────────┐
+                     │    TASKS    │ (Subtasks)
+                     └─────────────┘
+
+4. CONTENT RELATIONSHIPS
+   ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+   │    TASKS    │────│   COMMENTS  │────│  ATTACHMENTS│
+   └─────────────┘    └─────────────┘    └─────────────┘
+         │                    │                 │
+         │                    ▼                 │
+         │            ┌─────────────┐          │
+         │            │   COMMENTS  │ (Replies)│
+         │            └─────────────┘          │
+         │                    │                 │
+         └────────────────────┼─────────────────┘
+                              │
+                              ▼
+                     ┌─────────────┐
+                     │  ATTACHMENTS│
+                     └─────────────┘
+
+5. TIME TRACKING
+   ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+   │    USERS    │────│   TIME_LOGS │────│    TASKS    │
+   └─────────────┘    └─────────────┘    └─────────────┘
+                              │
+                              ▼
+                     ┌─────────────┐
+                     │   PROJECTS  │
+                     └─────────────┘
+
+6. NOTIFICATIONS & AUDIT
+   ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+   │    USERS    │────│NOTIFICATIONS│    │ACTIVITY_LOGS│
+   └─────────────┘    └─────────────┘    └─────────────┘
+
+KEY CONSTRAINTS
+===============
+
+1. FOREIGN KEY CONSTRAINTS:
+   - CASCADE: Delete child records when parent is deleted
+   - RESTRICT: Prevent parent deletion if children exist
+   - SET NULL: Set foreign key to NULL when parent is deleted
+
+2. CHECK CONSTRAINTS:
+   - Status fields: Valid enum values
+   - Priority fields: Valid priority levels
+   - Entity relationships: Ensure proper associations
+
+3. UNIQUE CONSTRAINTS:
+   - Username and email uniqueness
+   - Role names uniqueness
+   - Project-member combinations
+   - Task-watcher combinations
+
+4. NOT NULL CONSTRAINTS:
+   - Required fields for data integrity
+   - Critical relationship fields
+
+PERFORMANCE INDEXES
+===================
+
+1. PRIMARY KEY INDEXES:
+   - All UUID primary keys automatically indexed
+
+2. FOREIGN KEY INDEXES:
+   - user_id, project_id, task_id, milestone_id
+   - assigned_to, created_by, owner_id
+
+3. QUERY OPTIMIZATION INDEXES:
+   - status, priority, due_date
+   - created_at, updated_at
+   - email, username for user lookups
+
+4. COMPOSITE INDEXES:
+   - (project_id, status) for project task filtering
+   - (user_id, date) for time log queries
+   - (entity_type, entity_id) for activity logs
+
+DATA TYPES SUMMARY
+==================
+
+UUID: Primary keys, foreign keys
+VARCHAR: Short text fields (names, titles, status)
+TEXT: Long text content (descriptions, messages)
+DECIMAL: Numeric values (hours, budget)
+BOOLEAN: True/false flags
+TIMESTAMP: Date and time tracking
+DATE: Date-only fields
+TIME: Time-only fields
+JSONB: Flexible data storage (permissions, settings)
+INET: IP address storage
+BIGINT: Large numbers (file sizes)
+
+This ER diagram provides a complete, normalized database structure optimized for PostgreSQL and pgAdmin4, with proper relationships, constraints, and performance considerations. 

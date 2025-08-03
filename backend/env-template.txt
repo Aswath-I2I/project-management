@@ -1,0 +1,19 @@
+# Copy this file to .env and update with your PostgreSQL credentials
+
+# Database Configuration
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=project_management
+DB_USER=postgres
+DB_PASSWORD=your_postgres_password_here
+
+# Server Configuration
+PORT=5000
+NODE_ENV=development
+
+# JWT Configuration
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+JWT_EXPIRES_IN=7d
+
+# Frontend URL (for CORS)
+FRONTEND_URL=http://localhost:5173 
