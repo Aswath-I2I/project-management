@@ -3,7 +3,7 @@ const { pool } = require('../config/database');
 class TimeController {
   // Log time entry
   async logTime(timeData, userId) {
-    const { task_id, project_id, description, hours_spent, date, start_time, end_time, is_billable } = timeData;
+    const { task_id, project_id, description, hours_spent, date, is_billable } = timeData;
 
     // Validate that at least one entity is specified
     if (!task_id && !project_id) {
@@ -49,10 +49,10 @@ class TimeController {
     }
 
     const result = await pool.query(
-      `INSERT INTO time_logs (user_id, task_id, project_id, description, hours_spent, date, start_time, end_time, is_billable)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      `INSERT INTO time_logs (user_id, task_id, project_id, description, hours_spent, date, is_billable)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *`,
-      [userId, task_id, project_id, description, hours_spent, logDate, start_time, end_time, is_billable]
+      [userId, task_id, project_id, description, hours_spent, logDate, is_billable]
     );
 
     return result.rows[0];
@@ -60,7 +60,7 @@ class TimeController {
 
   // Update time log
   async updateTimeLog(timeLogId, updateData, userId) {
-    const { description, hours_spent, date, start_time, end_time, is_billable } = updateData;
+    const { description, hours_spent, date, is_billable } = updateData;
 
     // Get time log and check ownership
     const timeLogQuery = await pool.query(
@@ -110,13 +110,11 @@ class TimeController {
        SET description = COALESCE($1, description),
            hours_spent = COALESCE($2, hours_spent),
            date = COALESCE($3, date),
-           start_time = COALESCE($4, start_time),
-           end_time = COALESCE($5, end_time),
-           is_billable = COALESCE($6, is_billable),
+           is_billable = COALESCE($4, is_billable),
            updated_at = CURRENT_TIMESTAMP
-       WHERE id = $7
+       WHERE id = $5
        RETURNING *`,
-      [description, hours_spent, date, start_time, end_time, is_billable, timeLogId]
+      [description, hours_spent, date, is_billable, timeLogId]
     );
 
     return result.rows[0];

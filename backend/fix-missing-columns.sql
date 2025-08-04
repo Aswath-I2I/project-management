@@ -77,6 +77,20 @@ CREATE TABLE IF NOT EXISTS attachments (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Create time_logs table if it doesn't exist (without start_time and end_time)
+CREATE TABLE IF NOT EXISTS time_logs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    task_id UUID REFERENCES tasks(id) ON DELETE CASCADE,
+    project_id UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+    description TEXT,
+    hours_spent DECIMAL(8,2) NOT NULL,
+    date DATE NOT NULL,
+    is_billable BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Add missing indexes
 CREATE INDEX IF NOT EXISTS idx_tasks_milestone ON tasks(milestone_id);
 CREATE INDEX IF NOT EXISTS idx_tasks_parent ON tasks(parent_task_id);
@@ -95,6 +109,10 @@ CREATE INDEX IF NOT EXISTS idx_attachments_project ON attachments(project_id);
 CREATE INDEX IF NOT EXISTS idx_attachments_milestone ON attachments(milestone_id);
 CREATE INDEX IF NOT EXISTS idx_attachments_comment ON attachments(comment_id);
 CREATE INDEX IF NOT EXISTS idx_attachments_mime ON attachments(mime_type);
+CREATE INDEX IF NOT EXISTS idx_time_logs_user ON time_logs(user_id);
+CREATE INDEX IF NOT EXISTS idx_time_logs_task ON time_logs(task_id);
+CREATE INDEX IF NOT EXISTS idx_time_logs_project ON time_logs(project_id);
+CREATE INDEX IF NOT EXISTS idx_time_logs_date ON time_logs(date);
 
 -- Add missing triggers
 DROP TRIGGER IF EXISTS update_milestones_updated_at ON milestones;
@@ -102,6 +120,9 @@ CREATE TRIGGER update_milestones_updated_at BEFORE UPDATE ON milestones FOR EACH
 
 DROP TRIGGER IF EXISTS update_comments_updated_at ON comments;
 CREATE TRIGGER update_comments_updated_at BEFORE UPDATE ON comments FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_time_logs_updated_at ON time_logs;
+CREATE TRIGGER update_time_logs_updated_at BEFORE UPDATE ON time_logs FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Completion message
 DO $$

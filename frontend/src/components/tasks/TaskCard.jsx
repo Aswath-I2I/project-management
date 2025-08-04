@@ -1,10 +1,11 @@
 import React, { useState, useRef } from 'react';
-import { FiEdit, FiTrash2, FiUser, FiCalendar, FiFlag, FiMoreVertical } from 'react-icons/fi';
+import { FiEdit, FiTrash2, FiUser, FiCalendar, FiFlag, FiMoreVertical, FiMessageSquare } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 import TaskStatusBadge from './TaskStatusBadge';
 import TaskPriorityBadge from './TaskPriorityBadge';
 import TaskProgressBar from './TaskProgressBar';
 import TaskAssignModal from './TaskAssignModal';
+import TaskDetail from './TaskDetail';
 
 const TaskCard = ({ 
   task, 
@@ -18,6 +19,7 @@ const TaskCard = ({
 }) => {
   const [showActions, setShowActions] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
+  const [showTaskDetail, setShowTaskDetail] = useState(false);
   const actionsRef = useRef(null);
 
   const getStatusColor = (status) => {
@@ -82,7 +84,8 @@ const TaskCard = ({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
-        className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200"
+        className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200 cursor-pointer"
+        onClick={() => setShowTaskDetail(true)}
       >
         {/* Header */}
         <div className="p-4 border-b border-gray-100">
@@ -97,44 +100,53 @@ const TaskCard = ({
             </div>
             <div className="relative ml-3">
               <button
-                onClick={() => setShowActions(!showActions)}
-                className="p-1 rounded-md hover:bg-gray-100 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowActions(!showActions);
+                }}
+                className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
               >
-                <FiMoreVertical className="h-4 w-4 text-gray-500" />
+                <FiMoreVertical size={16} />
               </button>
-              
+
               {/* Actions Dropdown */}
               {showActions && (
-                <div className="absolute right-0 top-8 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-10">
+                <div
+                  ref={actionsRef}
+                  className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-10"
+                >
                   <div className="py-1">
                     <button
-                      onClick={() => {
-                        onEdit(task);
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit();
                         setShowActions(false);
                       }}
                       className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
-                      <FiEdit className="mr-3 h-4 w-4" />
+                      <FiEdit className="mr-2" size={14} />
                       Edit Task
                     </button>
                     <button
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         setShowAssignModal(true);
                         setShowActions(false);
                       }}
                       className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
-                      <FiUser className="mr-3 h-4 w-4" />
+                      <FiUser className="mr-2" size={14} />
                       Assign Task
                     </button>
                     <button
-                      onClick={() => {
-                        onDelete(task.id);
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete();
                         setShowActions(false);
                       }}
                       className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                     >
-                      <FiTrash2 className="mr-3 h-4 w-4" />
+                      <FiTrash2 className="mr-2" size={14} />
                       Delete Task
                     </button>
                   </div>
@@ -142,86 +154,91 @@ const TaskCard = ({
               )}
             </div>
           </div>
+
+          {/* Status and Priority */}
+          <div className="flex items-center space-x-2 mt-3">
+            <TaskStatusBadge status={task.status} onUpdate={(status) => onStatusUpdate(task.id, status)} />
+            <TaskPriorityBadge priority={task.priority} onUpdate={(priority) => onPriorityUpdate(task.id, priority)} />
+          </div>
         </div>
 
         {/* Content */}
         <div className="p-4">
-          {/* Status and Priority */}
+          {/* Assigned User */}
           <div className="flex items-center justify-between mb-3">
-            <TaskStatusBadge status={task.status} onUpdate={(status) => onStatusUpdate(task.id, status)} />
-            <TaskPriorityBadge priority={task.priority} onUpdate={(priority) => onPriorityUpdate(task.id, priority)} />
+            <div className="flex items-center space-x-2">
+              {assignedUser ? (
+                <>
+                  <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-semibold">
+                    {assignedUser.first_name?.charAt(0)}{assignedUser.last_name?.charAt(0)}
+                  </div>
+                  <span className="text-sm text-gray-700">
+                    {assignedUser.first_name} {assignedUser.last_name}
+                  </span>
+                </>
+              ) : (
+                <span className="text-sm text-gray-500">Unassigned</span>
+              )}
+            </div>
+
+            {/* Comment Count */}
+            <div className="flex items-center space-x-1 text-sm text-gray-500">
+              <FiMessageSquare size={14} />
+              <span>{task.comments_count || 0}</span>
+            </div>
           </div>
 
-          {/* Progress Bar */}
-          <div className="mb-4">
+          {/* Progress */}
+          <div className="mb-3">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-sm font-medium text-gray-700">Progress</span>
-              <span className="text-sm text-gray-500">{getValidProgressPercentage(task.progress_percentage)}%</span>
+              <span className="text-xs text-gray-500">Progress</span>
+              <span className="text-xs text-gray-500">
+                {getValidProgressPercentage(task.progress_percentage)}%
+              </span>
             </div>
-            <TaskProgressBar 
-              progress={getValidProgressPercentage(task.progress_percentage)} 
+            <TaskProgressBar
+              progress={getValidProgressPercentage(task.progress_percentage)}
               onUpdate={(progress) => onProgressUpdate(task.id, progress)}
             />
           </div>
 
-          {/* Assigned User */}
-          <div className="flex items-center mb-3">
-            <FiUser className="h-4 w-4 text-gray-400 mr-2" />
-            <span className="text-sm text-gray-600">
-              {assignedUser ? (
-                <span className="font-medium">
-                  {assignedUser.first_name} {assignedUser.last_name}
-                </span>
-              ) : (
-                <span className="text-gray-500">Unassigned</span>
-              )}
-            </span>
-          </div>
-
           {/* Due Date */}
-          <div className="flex items-center mb-3">
-            <FiCalendar className="h-4 w-4 text-gray-400 mr-2" />
-            <span className={`text-sm ${
-              new Date(task.due_date) < new Date() && task.status !== 'completed'
-                ? 'text-red-600 font-medium'
-                : 'text-gray-600'
-            }`}>
-              {formatDate(task.due_date)}
-            </span>
-          </div>
-
-          {/* Project */}
-          {task.project_name && (
-            <div className="flex items-center">
-              <FiFlag className="h-4 w-4 text-gray-400 mr-2" />
-              <span className="text-sm text-gray-600">{task.project_name}</span>
+          {task.due_date && (
+            <div className="flex items-center space-x-2 text-sm text-gray-500">
+              <FiCalendar size={14} />
+              <span>Due {formatDate(task.due_date)}</span>
             </div>
           )}
         </div>
-
-        {/* Footer */}
-        <div className="px-4 py-3 bg-gray-50 rounded-b-lg">
-          <div className="flex items-center justify-between text-xs text-gray-500">
-            <span>Created {new Date(task.created_at).toLocaleDateString()}</span>
-            {task.updated_at !== task.created_at && (
-              <span>Updated {new Date(task.updated_at).toLocaleDateString()}</span>
-            )}
-          </div>
-        </div>
       </motion.div>
 
+      {/* Task Detail Modal */}
+      {showTaskDetail && (
+        <TaskDetail
+          task={task}
+          onClose={() => setShowTaskDetail(false)}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          onStatusUpdate={onStatusUpdate}
+          onProgressUpdate={onProgressUpdate}
+          onPriorityUpdate={onPriorityUpdate}
+          onAssign={onAssign}
+          users={users}
+        />
+      )}
+
       {/* Assign Modal */}
-      <TaskAssignModal
-        isOpen={showAssignModal}
-        onClose={() => setShowAssignModal(false)}
-        task={task}
-        users={users}
-        currentAssignee={assignedUser}
-        onAssign={(userId) => {
-          onAssign(task.id, userId);
-          setShowAssignModal(false);
-        }}
-      />
+      {showAssignModal && (
+        <TaskAssignModal
+          task={task}
+          users={users}
+          onAssign={(userId) => {
+            onAssign(task.id, userId);
+            setShowAssignModal(false);
+          }}
+          onClose={() => setShowAssignModal(false)}
+        />
+      )}
     </>
   );
 };

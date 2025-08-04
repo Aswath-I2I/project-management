@@ -18,7 +18,7 @@
     "migrate:status": "node check-migration-status.js",
     "seed": "node deploy-setup.js",
     "deploy": "npm run migrate && npm start",
-    "railway:deploy": "NODE_ENV=production RUN_MIGRATIONS=true npm start"
+    "railway:deploy": "NODE_ENV=production RUN_MIGRATIONS=true node src/app.js"
   },
   "keywords": [
     "project-management",

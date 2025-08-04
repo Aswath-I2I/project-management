@@ -44,11 +44,12 @@ async function runMigrations() {
   }
 }
 
-// Run migrations if this script is executed directly
+// Run migrations if this script is executed directly (standalone)
 if (require.main === module) {
   runMigrations()
     .then(() => {
       console.log('Migration script completed successfully');
+      // Only exit if this script is run directly (not imported)
       process.exit(0);
     })
     .catch((error) => {

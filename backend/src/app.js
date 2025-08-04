@@ -36,7 +36,7 @@ app.use(cors({
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minutes
-  max: 500, // limit each IP to 500 requests per windowMs
+  max: 1000, // limit each IP to 500 requests per windowMs
   message: 'Too many requests from this IP, please try again later.'
 });
 app.use('/api/', limiter);
@@ -128,17 +128,31 @@ async function startServer() {
   try {
     // Run migrations on startup (only in production or when explicitly requested)
     if (process.env.NODE_ENV === 'production' || process.env.RUN_MIGRATIONS === 'true') {
-      logger.info('Running database migrations...');
-      await runMigrations();
-      logger.info('Database migrations completed successfully');
+      logger.info('🚀 Running database migrations...');
+      try {
+        await runMigrations();
+        logger.info('✅ Database migrations completed successfully');
+      } catch (migrationError) {
+        logger.error('❌ Migration failed:', migrationError);
+        // Don't exit on migration failure, try to start server anyway
+        logger.info('⚠️ Continuing with server startup despite migration failure');
+      }
     }
 
     server.listen(PORT, () => {
-      logger.info(`Server running on port ${PORT}`);
-      logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
+      logger.info(`🚀 Server running on port ${PORT}`);
+      logger.info(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+      logger.info(`📊 Health check available at: http://localhost:${PORT}/health`);
     });
+
+    // Handle server startup errors
+    server.on('error', (error) => {
+      logger.error('❌ Server startup failed:', error);
+      process.exit(1);
+    });
+
   } catch (error) {
-    logger.error('Failed to start server:', error);
+    logger.error('❌ Failed to start server:', error);
     process.exit(1);
   }
 }

@@ -1,20 +1,32 @@
 const express = require('express');
-const { body, param, query } = require('express-validator');
+const { body, param, query, validationResult } = require('express-validator');
 const commentController = require('../controllers/commentController');
 const auth = require('../middleware/auth');
-const validate = require('../middleware/validate');
 
 const router = express.Router();
 
 // Apply authentication middleware to all routes
 router.use(auth);
 
+// Check validation results
+const handleValidationErrors = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      message: 'Validation failed',
+      errors: errors.array()
+    });
+  }
+  next();
+};
+
 // Get comments for a task
 router.get('/task/:taskId', [
   param('taskId').isUUID().withMessage('Invalid task ID'),
   query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
   query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
-  validate
+  handleValidationErrors
 ], async (req, res) => {
   try {
     const { taskId } = req.params;
@@ -40,7 +52,7 @@ router.get('/project/:projectId', [
   param('projectId').isUUID().withMessage('Invalid project ID'),
   query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
   query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
-  validate
+  handleValidationErrors
 ], async (req, res) => {
   try {
     const { projectId } = req.params;
@@ -69,7 +81,7 @@ router.post('/', [
   body('project_id').optional().isUUID().withMessage('Invalid project ID'),
   body('milestone_id').optional().isUUID().withMessage('Invalid milestone ID'),
   body('parent_comment_id').optional().isUUID().withMessage('Invalid parent comment ID'),
-  validate
+  handleValidationErrors
 ], async (req, res) => {
   try {
     const commentData = req.body;
@@ -105,7 +117,7 @@ router.put('/:commentId', [
   param('commentId').isUUID().withMessage('Invalid comment ID'),
   body('content').trim().notEmpty().withMessage('Comment content is required')
     .isLength({ max: 2000 }).withMessage('Comment content must be less than 2000 characters'),
-  validate
+  handleValidationErrors
 ], async (req, res) => {
   try {
     const { commentId } = req.params;
@@ -129,7 +141,7 @@ router.put('/:commentId', [
 // Delete a comment
 router.delete('/:commentId', [
   param('commentId').isUUID().withMessage('Invalid comment ID'),
-  validate
+  handleValidationErrors
 ], async (req, res) => {
   try {
     const { commentId } = req.params;

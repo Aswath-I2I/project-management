@@ -11,8 +11,6 @@ const validateTimeLog = [
   body('task_id').optional().isUUID().withMessage('Valid task ID is required'),
   body('project_id').optional().isUUID().withMessage('Valid project ID is required'),
   body('date').optional().isISO8601().withMessage('Invalid date format'),
-  body('start_time').optional().matches(/^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/).withMessage('Invalid start time format (HH:MM:SS)'),
-  body('end_time').optional().matches(/^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/).withMessage('Invalid end time format (HH:MM:SS)'),
   body('is_billable').optional().isBoolean().withMessage('is_billable must be a boolean')
 ];
 
@@ -20,8 +18,6 @@ const validateTimeLogUpdate = [
   body('description').optional().trim().isLength({ min: 1, max: 500 }).withMessage('Description must be less than 500 characters'),
   body('hours_spent').optional().isFloat({ min: 0.1 }).withMessage('Hours spent must be greater than 0'),
   body('date').optional().isISO8601().withMessage('Invalid date format'),
-  body('start_time').optional().matches(/^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/).withMessage('Invalid start time format (HH:MM:SS)'),
-  body('end_time').optional().matches(/^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/).withMessage('Invalid end time format (HH:MM:SS)'),
   body('is_billable').optional().isBoolean().withMessage('is_billable must be a boolean')
 ];
 
