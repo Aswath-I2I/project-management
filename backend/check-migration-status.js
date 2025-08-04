@@ -23,7 +23,7 @@ async function checkMigrationStatus() {
       SELECT table_name 
       FROM information_schema.tables 
       WHERE table_schema = 'public' 
-      AND table_name IN ('users', 'roles', 'projects', 'milestones', 'tasks', 'project_members', 'comments', 'attachments', 'time_logs')
+      AND table_name IN ('users', 'roles', 'user_roles', 'projects', 'milestones', 'tasks', 'project_members', 'comments', 'attachments', 'time_logs')
       ORDER BY table_name
     `;
     
@@ -31,7 +31,7 @@ async function checkMigrationStatus() {
     const existingTables = tablesResult.rows.map(row => row.table_name);
     
     console.log('📋 Database Tables Status:');
-    const expectedTables = ['users', 'roles', 'projects', 'milestones', 'tasks', 'project_members', 'comments', 'attachments', 'time_logs'];
+    const expectedTables = ['users', 'roles', 'user_roles', 'projects', 'milestones', 'tasks', 'project_members', 'comments', 'attachments', 'time_logs'];
     
     expectedTables.forEach(table => {
       const status = existingTables.includes(table) ? '✅' : '❌';

@@ -14,7 +14,6 @@
     "migrate": "node deploy-setup.js",
     "migrate:down": "node migrate-down.js",
     "migrate:reset": "npm run migrate:down && npm run migrate",
-    "migrate:fix": "node fix-missing-columns.js",
     "migrate:status": "node check-migration-status.js",
     "seed": "node deploy-setup.js",
     "deploy": "npm run migrate && npm start",

@@ -98,61 +98,6 @@ const TaskCard = ({
                 {task.description}
               </p>
             </div>
-            <div className="relative ml-3">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowActions(!showActions);
-                }}
-                className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <FiMoreVertical size={16} />
-              </button>
-
-              {/* Actions Dropdown */}
-              {showActions && (
-                <div
-                  ref={actionsRef}
-                  className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-10"
-                >
-                  <div className="py-1">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onEdit();
-                        setShowActions(false);
-                      }}
-                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >
-                      <FiEdit className="mr-2" size={14} />
-                      Edit Task
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowAssignModal(true);
-                        setShowActions(false);
-                      }}
-                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >
-                      <FiUser className="mr-2" size={14} />
-                      Assign Task
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDelete();
-                        setShowActions(false);
-                      }}
-                      className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                    >
-                      <FiTrash2 className="mr-2" size={14} />
-                      Delete Task
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
           </div>
 
           {/* Status and Priority */}

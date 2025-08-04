@@ -20,6 +20,9 @@ DROP INDEX IF EXISTS idx_users_email;
 DROP INDEX IF EXISTS idx_users_username;
 DROP INDEX IF EXISTS idx_users_active;
 
+DROP INDEX IF EXISTS idx_user_roles_user;
+DROP INDEX IF EXISTS idx_user_roles_role;
+
 DROP INDEX IF EXISTS idx_projects_created_by;
 DROP INDEX IF EXISTS idx_projects_status;
 DROP INDEX IF EXISTS idx_projects_dates;
@@ -64,6 +67,7 @@ DROP TABLE IF EXISTS time_logs CASCADE;
 DROP TABLE IF EXISTS attachments CASCADE;
 DROP TABLE IF EXISTS comments CASCADE;
 DROP TABLE IF EXISTS project_members CASCADE;
+DROP TABLE IF EXISTS user_roles CASCADE;
 DROP TABLE IF EXISTS tasks CASCADE;
 DROP TABLE IF EXISTS milestones CASCADE;
 DROP TABLE IF EXISTS projects CASCADE;

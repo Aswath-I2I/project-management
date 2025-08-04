@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { FiX, FiSave, FiAlertCircle, FiFolder } from 'react-icons/fi';
 import { projectsAPI } from '../../services/api';
 import toast from 'react-hot-toast';
+import { validateBeforeApiCall, validationRules } from '../../utils/validation.js';
 
 const ProjectModal = ({ isOpen, onClose, project = null, onSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -59,33 +60,33 @@ const ProjectModal = ({ isOpen, onClose, project = null, onSuccess }) => {
   }, [isOpen, project, isEditing, setValue, reset]);
 
   const onSubmit = async (data) => {
-    console.log('ProjectModal onSubmit called with data:', data);
+    
+    // Validate before API call
+    const validatedData = validateBeforeApiCall(data, validationRules.project);
+    if (!validatedData) {
+      return; // Validation failed, error already shown
+    }
+
     setIsLoading(true);
     try {
       const projectData = {
-        name: data.name,
-        description: data.description,
+        name: validatedData.name,
+        description: validatedData.description,
         status: data.status,
         priority: data.priority,
-        start_date: data.start_date || null,
-        end_date: data.end_date || null,
+        start_date: validatedData.start_date || null,
+        end_date: validatedData.end_date || null,
         budget: data.budget ? parseFloat(data.budget) : null,
       };
 
-      console.log('Sending project data:', projectData);
-
       let response;
       if (isEditing) {
-        console.log('Updating project with ID:', project.id);
         response = await projectsAPI.update(project.id, projectData);
         toast.success('Project updated successfully!');
       } else {
-        console.log('Creating new project');
         response = await projectsAPI.create(projectData);
         toast.success('Project created successfully!');
       }
-
-      console.log('API response:', response);
       onSuccess(response.data.data);
       onClose();
     } catch (error) {

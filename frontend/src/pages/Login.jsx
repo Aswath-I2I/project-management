@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { FiMail, FiLock, FiEye, FiEyeOff, FiAlertCircle } from 'react-icons/fi';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { useNotification } from '../contexts/NotificationContext.jsx';
+import { validateBeforeApiCall, validationRules } from '../utils/validation.js';
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -20,9 +21,15 @@ const Login = () => {
   } = useForm();
 
   const onSubmit = async (data) => {
+    // Validate before API call
+    const validatedData = validateBeforeApiCall(data, validationRules.login);
+    if (!validatedData) {
+      return; // Validation failed, error already shown
+    }
+
     setIsLoading(true);
     try {
-      const result = await login(data.email, data.password);
+      const result = await login(validatedData.email, validatedData.password);
       if (result.success) {
         navigate('/dashboard');
       }
@@ -176,8 +183,8 @@ const Login = () => {
         <div className="mt-6 p-4 bg-gray-50 rounded-lg">
           <h3 className="text-sm font-medium text-gray-900 mb-2">Demo Credentials</h3>
           <div className="text-xs text-gray-600 space-y-1">
-            <p><strong>Email:</strong> john@example.com</p>
-            <p><strong>Password:</strong> password123</p>
+            <p><strong>Email:</strong> superadmin@projectmanagement.com</p>
+            <p><strong>Password:</strong> admin@123</p>
           </div>
         </div>
       </motion.div>

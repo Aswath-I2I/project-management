@@ -27,10 +27,7 @@ import Register from './pages/Register.jsx';
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
   
-  console.log('ProtectedRoute - user:', user, 'loading:', loading);
-  
   if (loading) {
-    console.log('ProtectedRoute - showing loading spinner');
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="loading-spinner h-8 w-8"></div>
@@ -39,11 +36,9 @@ const ProtectedRoute = ({ children }) => {
   }
   
   if (!user) {
-    console.log('ProtectedRoute - no user, redirecting to login');
     return <Navigate to="/login" replace />;
   }
   
-  console.log('ProtectedRoute - user authenticated, rendering children');
   return children;
 };
 
@@ -74,7 +69,6 @@ const queryClient = new QueryClient({
 });
 
 function App() {
-  console.log('App component rendering');
   
   return (
     <QueryClientProvider client={queryClient}>

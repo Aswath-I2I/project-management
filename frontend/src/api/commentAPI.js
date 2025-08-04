@@ -30,6 +30,7 @@ const commentAPI = {
     const response = await api.put(`/comments/${commentId}`, updateData);
     return response.data;
   },
+  
 
   // Delete a comment
   deleteComment: async (commentId) => {

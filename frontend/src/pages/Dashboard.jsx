@@ -11,17 +11,18 @@ import {
 import ProjectCard from '../components/dashboard/ProjectCard.jsx';
 import StatsCard from '../components/dashboard/StatsCard.jsx';
 import TaskList from '../components/dashboard/TaskList.jsx';
-import { projectsAPI, tasksAPI } from '../services/api';
+import TaskDetail from '../components/tasks/TaskDetail.jsx';
+import { projectsAPI, tasksAPI, teamAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import toast from 'react-hot-toast';
 
 const Dashboard = () => {
-  console.log('Dashboard component rendering');
   
   const { user, token } = useAuth();
-  console.log('Dashboard - Auth context:', { user: !!user, token: !!token });
   
   const [projects, setProjects] = useState([]);
   const [tasks, setTasks] = useState([]);
+  const [users, setUsers] = useState([]);
   const [stats, setStats] = useState({
     totalProjects: 0,
     activeTasks: 0,
@@ -29,55 +30,48 @@ const Dashboard = () => {
     totalHours: 0
   });
   const [loading, setLoading] = useState(true);
+  const [selectedTask, setSelectedTask] = useState(null);
 
   useEffect(() => {
-    console.log("dashboard useEffect triggered");
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
         
         // Check authentication first
         const token = localStorage.getItem('token');
-        console.log('Token exists:', !!token);
-        console.log('Token value:', token ? token.substring(0, 20) + '...' : 'No token');
         
         if (!token) {
           console.error('No authentication token found');
           setLoading(false);
           return;
         }
-        
-        console.log('Fetching dashboard data...');
-        
-        // Test API connection first
-        console.log('Testing API connection...');
         try {
           const testResponse = await fetch('/api/health');
-          console.log('Health check response:', testResponse.status);
         } catch (testError) {
           console.error('Health check failed:', testError);
         }
         
-        // Fetch projects
-        console.log('Fetching projects...');
         const projectsResponse = await projectsAPI.getAll();
-        console.log('Projects response:', projectsResponse);
         const projects = projectsResponse.data.data || [];
         setProjects(projects);
 
-        // Fetch user's tasks
-        console.log('Fetching tasks...');
         const tasksResponse = await tasksAPI.getAssigned();
-        console.log('Tasks response:', tasksResponse);
         const tasks = tasksResponse.data.data || [];
         setTasks(tasks);
+
+        // Fetch users for task assignment
+        try {
+          const usersResponse = await teamAPI.getAssignableUsers();
+          setUsers(usersResponse.data.data || []);
+        } catch (userError) {
+          console.error('Failed to fetch users:', userError);
+        }
 
         // Calculate stats
         const totalProjects = projects.length || 0;
         const activeTasks = tasks.filter(task => task.status !== 'completed').length || 0;
         const completedTasks = tasks.filter(task => task.status === 'completed').length || 0;
         
-        console.log('Calculated stats:', { totalProjects, activeTasks, completedTasks });
         
         setStats({
           totalProjects,
@@ -109,7 +103,73 @@ const Dashboard = () => {
     fetchDashboardData();
   }, []);
 
-  console.log('Dashboard render - loading:', loading, 'projects:', projects.length, 'tasks:', tasks.length);
+  // Task operation handlers
+  const handleTaskStatusUpdate = async (taskId, newStatus) => {
+    try {
+      await tasksAPI.updateStatus(taskId, newStatus);
+      toast.success('Task status updated successfully!');
+      // Refresh tasks
+      const tasksResponse = await tasksAPI.getAssigned();
+      setTasks(tasksResponse.data.data || []);
+    } catch (error) {
+      toast.error('Failed to update task status');
+    }
+  };
+
+  const handleTaskProgressUpdate = async (taskId, newProgress) => {
+    try {
+      await tasksAPI.updateProgress(taskId, newProgress);
+      toast.success('Task progress updated successfully!');
+      // Refresh tasks
+      const tasksResponse = await tasksAPI.getAssigned();
+      setTasks(tasksResponse.data.data || []);
+    } catch (error) {
+      toast.error('Failed to update task progress');
+    }
+  };
+
+  const handleTaskPriorityUpdate = async (taskId, newPriority) => {
+    try {
+      await tasksAPI.updatePriority(taskId, newPriority);
+      toast.success('Task priority updated successfully!');
+      // Refresh tasks
+      const tasksResponse = await tasksAPI.getAssigned();
+      setTasks(tasksResponse.data.data || []);
+    } catch (error) {
+      toast.error('Failed to update task priority');
+    }
+  };
+
+  const handleTaskAssign = async (taskId, userId) => {
+    try {
+      await tasksAPI.assignTask(taskId, userId);
+      toast.success('Task assigned successfully!');
+      // Refresh tasks
+      const tasksResponse = await tasksAPI.getAssigned();
+      setTasks(tasksResponse.data.data || []);
+    } catch (error) {
+      toast.error('Failed to assign task');
+    }
+  };
+
+  const handleTaskDelete = async () => {
+    if (!selectedTask) return;
+    try {
+      await tasksAPI.delete(selectedTask.id);
+      toast.success('Task deleted successfully!');
+      setSelectedTask(null);
+      // Refresh tasks
+      const tasksResponse = await tasksAPI.getAssigned();
+      setTasks(tasksResponse.data.data || []);
+    } catch (error) {
+      toast.error('Failed to delete task');
+    }
+  };
+
+  const handleTaskEdit = () => {
+    // For now, just close the modal - edit functionality can be added later
+    setSelectedTask(null);
+  };
 
   // Simple fallback to ensure component renders
   if (!user) {
@@ -250,12 +310,27 @@ const Dashboard = () => {
                   </a>
                 </div>
                 
-                <TaskList tasks={tasks.slice(0, 5)} />
+                <TaskList tasks={tasks.slice(0, 5)} onTaskClick={setSelectedTask} />
               </div>
             </div>
           </motion.div>
         </div>
       </div>
+      
+      {/* Task Detail Modal */}
+      {selectedTask && (
+        <TaskDetail
+          task={selectedTask}
+          onClose={() => setSelectedTask(null)}
+          onEdit={handleTaskEdit}
+          onDelete={handleTaskDelete}
+          onStatusUpdate={handleTaskStatusUpdate}
+          onProgressUpdate={handleTaskProgressUpdate}
+          onPriorityUpdate={handleTaskPriorityUpdate}
+          onAssign={handleTaskAssign}
+          users={users}
+        />
+      )}
     </div>
   );
 };

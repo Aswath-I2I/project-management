@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaPaperPlane, FaTimes } from 'react-icons/fa';
+import { validateBeforeApiCall, validationRules } from '../../utils/validation.js';
 
 const CommentForm = ({ 
   onSubmit, 
@@ -15,11 +16,16 @@ const CommentForm = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!content.trim()) return;
+    
+    // Validate before API call
+    const validatedData = validateBeforeApiCall({ content }, validationRules.comment);
+    if (!validatedData) {
+      return; // Validation failed, error already shown
+    }
 
     setIsSubmitting(true);
     try {
-      await onSubmit(content.trim());
+      await onSubmit(validatedData.content);
       setContent('');
       if (onCancel) onCancel();
     } catch (error) {

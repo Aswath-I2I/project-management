@@ -41,7 +41,6 @@ const Team = () => {
 
       // Fetch all users with filters
       const usersResponse = await teamAPI.getAllUsers(apiParams);
-      console.log('Users response:', usersResponse);
       
       // Handle both paginated and non-paginated responses
       const usersData = usersResponse.data.data || usersResponse.data || [];

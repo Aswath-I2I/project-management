@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FiX, FiUser, FiMail, FiLock, FiShield } from 'react-icons/fi';
 import { toast } from 'react-hot-toast';
 import { teamAPI } from '../../services/api';
+import { validateBeforeApiCall, validationRules } from '../../utils/validation.js';
 
 const UserModal = ({ isOpen, onClose, user = null, onSave }) => {
   const [formData, setFormData] = useState({
@@ -57,45 +58,48 @@ const UserModal = ({ isOpen, onClose, user = null, onSave }) => {
     }
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!formData.first_name.trim()) {
-      newErrors.first_name = 'First name is required';
-    }
-
-    if (!formData.last_name.trim()) {
-      newErrors.last_name = 'Last name is required';
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
-    }
-
-    if (!formData.username.trim()) {
-      newErrors.username = 'Username is required';
-    } else if (formData.username.length < 3) {
-      newErrors.username = 'Username must be at least 3 characters';
-    }
-
-    if (!user && !formData.password) {
-      newErrors.password = 'Password is required for new users';
-    } else if (formData.password && formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     e.stopPropagation();
 
-    if (!validateForm()) {
-      return;
+    // Create custom validation rules for user form
+    const userValidationRules = {
+      first_name: {
+        required: true,
+        type: 'text',
+        sanitize: 'text',
+        label: 'First name'
+      },
+      last_name: {
+        required: true,
+        type: 'text',
+        sanitize: 'text',
+        label: 'Last name'
+      },
+      email: {
+        required: true,
+        type: 'email',
+        sanitize: 'email',
+        label: 'Email'
+      },
+      username: {
+        required: true,
+        type: 'username',
+        sanitize: 'username',
+        label: 'Username'
+      },
+      password: {
+        required: !user, // Only required for new users
+        type: 'password',
+        sanitize: 'password',
+        label: 'Password'
+      }
+    };
+
+    // Validate before API call
+    const validatedData = validateBeforeApiCall(formData, userValidationRules);
+    if (!validatedData) {
+      return; // Validation failed, error already shown
     }
 
     setLoading(true);

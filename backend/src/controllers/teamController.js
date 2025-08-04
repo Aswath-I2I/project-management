@@ -118,7 +118,7 @@ class TeamController {
           SELECT ur.user_id, r.name as role_name
           FROM user_roles ur
           JOIN roles r ON ur.role_id = r.id
-          WHERE ur.user_id = ANY($1) AND ur.project_id IS NULL
+          WHERE ur.user_id = ANY($1)
         `;
         const rolesResult = await pool.query(rolesQuery, [userIds]);
         
@@ -148,7 +148,7 @@ class TeamController {
         SELECT ur.user_id, r.name as role_name
         FROM user_roles ur
         JOIN roles r ON ur.role_id = r.id
-        WHERE ur.user_id = ANY($1) AND ur.project_id IS NULL
+        WHERE ur.user_id = ANY($1)
       `;
       const rolesResult = await pool.query(rolesQuery, [userIds]);
       
@@ -197,7 +197,7 @@ class TeamController {
         u.*,
         array_agg(DISTINCT r.name) as global_roles
       FROM users u
-      LEFT JOIN user_roles ur ON u.id = ur.user_id AND ur.project_id IS NULL
+      LEFT JOIN user_roles ur ON u.id = ur.user_id
       LEFT JOIN roles r ON ur.role_id = r.id
       WHERE u.id = $1
       GROUP BY u.id
@@ -254,7 +254,7 @@ class TeamController {
         COUNT(DISTINCT CASE WHEN t.status = 'completed' THEN t.id END) as completed_tasks_count
       FROM project_members pm
       JOIN users u ON pm.user_id = u.id
-      LEFT JOIN user_roles ur ON u.id = ur.user_id AND ur.project_id IS NULL
+      LEFT JOIN user_roles ur ON u.id = ur.user_id
       LEFT JOIN roles r ON ur.role_id = r.id
       LEFT JOIN tasks t ON u.id = t.assigned_to AND t.project_id = pm.project_id
       WHERE pm.project_id = $1

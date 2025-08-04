@@ -71,7 +71,7 @@ const Sidebar = ({ onClose }) => {
             <p className="text-sm font-medium text-gray-900">
               {user?.first_name} {user?.last_name}
             </p>
-            <p className="text-xs text-gray-500">{user?.email}</p>
+            <p className="text-xs text-gray-500 break-all">{user?.email}</p>
           </div>
         </div>
       </div>

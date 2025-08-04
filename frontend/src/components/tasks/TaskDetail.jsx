@@ -14,6 +14,7 @@ import TaskStatusBadge from './TaskStatusBadge';
 import TaskPriorityBadge from './TaskPriorityBadge';
 import TaskProgressBar from './TaskProgressBar';
 import TaskAssignModal from './TaskAssignModal';
+import TaskModal from './TaskModal';
 import CommentsSection from '../comments/CommentsSection';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -26,9 +27,11 @@ const TaskDetail = ({
   onProgressUpdate, 
   onPriorityUpdate,
   onAssign, 
-  users 
+  users,
+  projects = []
 }) => {
   const [showAssignModal, setShowAssignModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const { user } = useAuth();
 
   const formatDate = (dateString) => {
@@ -65,46 +68,46 @@ const TaskDetail = ({
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
+        className="bg-white rounded-lg shadow-xl max-w-7xl w-full max-h-[95vh] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <div className="flex items-center space-x-3">
-            <h2 className="text-2xl font-bold text-gray-900">{task.title}</h2>
+        <div className="flex items-center justify-between p-8 border-b border-gray-200">
+          <div className="flex items-center space-x-4">
+            <h2 className="text-3xl font-bold text-gray-900">{task.title}</h2>
             <TaskStatusBadge status={task.status} onUpdate={(status) => onStatusUpdate(task.id, status)} />
             <TaskPriorityBadge priority={task.priority} onUpdate={(priority) => onPriorityUpdate(task.id, priority)} />
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3">
             <button
-              onClick={onEdit}
-              className="p-2 text-gray-400 hover:text-blue-500 transition-colors"
+              onClick={() => setShowEditModal(true)}
+              className="p-3 text-gray-400 hover:text-blue-500 transition-colors"
               title="Edit Task"
             >
-              <FaEdit size={16} />
+              <FaEdit size={18} />
             </button>
             <button
               onClick={onDelete}
-              className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+              className="p-3 text-gray-400 hover:text-red-500 transition-colors"
               title="Delete Task"
             >
-              <FaTrash size={16} />
+              <FaTrash size={18} />
             </button>
             <button
               onClick={onClose}
-              className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+              className="p-3 text-gray-400 hover:text-gray-600 transition-colors"
               title="Close"
             >
-              <FaTimes size={16} />
+              <FaTimes size={18} />
             </button>
           </div>
         </div>
 
         {/* Content */}
-        <div className="flex h-[calc(90vh-120px)]">
+        <div className="flex h-[calc(95vh-140px)]">
           {/* Left Panel - Task Details */}
-          <div className="w-1/2 p-6 border-r border-gray-200 overflow-y-auto">
-            <div className="space-y-6">
+          <div className="w-1/2 p-8 border-r border-gray-200 overflow-y-auto">
+            <div className="space-y-8">
               {/* Description */}
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Description</h3>
@@ -219,6 +222,22 @@ const TaskDetail = ({
             onClose={() => setShowAssignModal(false)}
           />
         )}
+
+        {/* Edit Task Modal */}
+        <TaskModal
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          task={task}
+          projects={[]} // We'll need to pass projects if needed
+          users={users}
+          onSave={(updatedTask) => {
+            // Call the parent's onEdit handler with the updated task
+            if (onEdit) {
+              onEdit(updatedTask);
+            }
+            setShowEditModal(false);
+          }}
+        />
       </motion.div>
     </motion.div>
   );

@@ -13,6 +13,7 @@ import {
 } from 'react-icons/fi';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { useNotification } from '../contexts/NotificationContext.jsx';
+import { validateBeforeApiCall, validationRules } from '../utils/validation.js';
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -32,12 +33,18 @@ const Register = () => {
   const password = watch('password');
 
   const onSubmit = async (data) => {
+    // Validate before API call
+    const validatedData = validateBeforeApiCall(data, validationRules.register);
+    if (!validatedData) {
+      return; // Validation failed, error already shown
+    }
+
     setIsLoading(true);
     try {
       const result = await registerUser({
-        username: data.username,
-        email: data.email,
-        password: data.password,
+        username: validatedData.username,
+        email: validatedData.email,
+        password: validatedData.password,
         first_name: data.firstName,
         last_name: data.lastName,
         phone: data.phone,

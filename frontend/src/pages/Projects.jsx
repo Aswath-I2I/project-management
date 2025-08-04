@@ -24,15 +24,10 @@ const Projects = () => {
       
       // Debug: Check if token exists
       const token = localStorage.getItem('token');
-      console.log('Projects - Token exists:', !!token);
-      console.log('Projects - Token value:', token ? token.substring(0, 20) + '...' : 'No token');
       
       const response = await projectsAPI.getAll();
-      console.log('Projects API response:', response);
       setProjects(response.data.data || []);
     } catch (err) {
-      console.error('Projects API error:', err);
-      console.error('Error response:', err.response);
       setError('Failed to fetch projects: ' + (err.response?.data?.message || err.message));
     } finally {
       setLoading(false);

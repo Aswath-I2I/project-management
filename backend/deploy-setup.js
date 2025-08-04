@@ -20,20 +20,25 @@ async function runMigrations() {
   try {
     console.log('🚀 Starting Railway deployment setup...');
     
-    // Read the migration SQL file
+    // Step 1: Read and execute the main migration SQL file
+    console.log('📄 Step 1: Executing main database migrations...');
     const migrationPath = path.join(__dirname, 'railway-setup.sql');
     const migrationSQL = fs.readFileSync(migrationPath, 'utf8');
-    
-    console.log('📄 Executing database migrations...');
-    
-    // Execute the migration SQL
     await client.query(migrationSQL);
+    console.log('✅ Main database migrations completed successfully!');
     
-    console.log('✅ Database migrations completed successfully!');
+    // Step 2: Read and execute the fix-missing-columns migration
+    console.log('📄 Step 2: Executing missing columns migration...');
+    const fixPath = path.join(__dirname, 'fix-missing-columns.sql');
+    const fixSQL = fs.readFileSync(fixPath, 'utf8');
+    await client.query(fixSQL);
+    console.log('✅ Missing columns migration completed successfully!');
+    
     console.log('🎉 Railway deployment setup completed!');
     console.log('📋 Superadmin credentials:');
     console.log('   Username: superadmin');
     console.log('   Password: admin@123');
+    console.log('🎯 Database schema is now complete with all required columns and tables.');
     
   } catch (error) {
     console.error('❌ Migration failed:', error.message);

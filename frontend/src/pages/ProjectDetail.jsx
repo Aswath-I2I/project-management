@@ -8,6 +8,7 @@ import TeamMemberModal from '../components/team/TeamMemberModal';
 import MilestoneStatusUpdate from '../components/milestones/MilestoneStatusUpdate';
 import ProjectModal from '../components/projects/ProjectModal';
 import TaskModal from '../components/tasks/TaskModal';
+import TaskDetail from '../components/tasks/TaskDetail';
 import DeleteConfirmationModal from '../components/common/DeleteConfirmationModal';
 import { canAddTeamMembers, canManageMilestones, canEditProject, getRoleDisplayName, getRoleColor } from '../utils/permissions';
 import { useAuth } from '../contexts/AuthContext';
@@ -20,6 +21,7 @@ const ProjectDetail = () => {
   const [milestones, setMilestones] = useState([]);
   const [teamMembers, setTeamMembers] = useState([]);
   const [tasks, setTasks] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [milestoneLoading, setMilestoneLoading] = useState(true);
   const [teamLoading, setTeamLoading] = useState(true);
@@ -38,6 +40,8 @@ const ProjectDetail = () => {
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [editingMilestone, setEditingMilestone] = useState(null);
   const [editingTask, setEditingTask] = useState(null);
+  const [showTaskDetail, setShowTaskDetail] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
   
   // Delete confirmation modal states
   const [deleteMilestoneModal, setDeleteMilestoneModal] = useState({ isOpen: false, milestone: null });
@@ -105,6 +109,15 @@ const ProjectDetail = () => {
     }
   };
 
+  const fetchUsers = async () => {
+    try {
+      const response = await teamAPI.getAssignableUsers();
+      setUsers(response.data.data || []);
+    } catch (err) {
+      console.error('Failed to fetch users:', err);
+    }
+  };
+
   useEffect(() => {
     fetchProject();
   }, [id]);
@@ -119,6 +132,7 @@ const ProjectDetail = () => {
 
   useEffect(() => {
     fetchTasks();
+    fetchUsers();
   }, [id]);
 
   const handleCreateMilestone = () => {
@@ -157,15 +171,69 @@ const ProjectDetail = () => {
     setIsTaskModalOpen(true);
   };
 
-  const handleEditTask = (task) => {
-    setEditingTask(task);
-    setIsTaskModalOpen(true);
-  };
 
   const handleTaskSuccess = () => {
     fetchTasks();
     setIsTaskModalOpen(false);
     setEditingTask(null);
+  };
+
+  const handleViewTask = (task) => {
+    setSelectedTask(task);
+    setShowTaskDetail(true);
+  };
+
+  const handleTaskStatusUpdate = async (taskId, newStatus) => {
+    try {
+      await tasksAPI.updateStatus(taskId, newStatus);
+      toast.success('Task status updated successfully!');
+      fetchTasks();
+    } catch (error) {
+      toast.error('Failed to update task status');
+    }
+  };
+
+  const handleTaskProgressUpdate = async (taskId, newProgress) => {
+    try {
+      await tasksAPI.updateProgress(taskId, newProgress);
+      toast.success('Task progress updated successfully!');
+      fetchTasks();
+    } catch (error) {
+      toast.error('Failed to update task progress');
+    }
+  };
+
+  const handleTaskPriorityUpdate = async (taskId, newPriority) => {
+    try {
+      await tasksAPI.updatePriority(taskId, newPriority);
+      toast.success('Task priority updated successfully!');
+      fetchTasks();
+    } catch (error) {
+      toast.error('Failed to update task priority');
+    }
+  };
+
+  const handleTaskAssign = async (taskId, userId) => {
+    try {
+      await tasksAPI.assignTask(taskId, userId);
+      toast.success('Task assigned successfully!');
+      fetchTasks();
+    } catch (error) {
+      toast.error('Failed to assign task');
+    }
+  };
+
+  const handleTaskDelete = async () => {
+    if (!selectedTask) return;
+    try {
+      await tasksAPI.delete(selectedTask.id);
+      toast.success('Task deleted successfully!');
+      setShowTaskDetail(false);
+      setSelectedTask(null);
+      fetchTasks();
+    } catch (error) {
+      toast.error('Failed to delete task');
+    }
   };
 
   const getStatusColor = (status) => {
@@ -364,7 +432,7 @@ const ProjectDetail = () => {
       ) : (
         <div className="space-y-4">
           {tasks.slice(0, 10).map((task) => (
-            <div key={task.id} className="bg-white border rounded-lg p-4 hover:shadow-md transition">
+            <div key={task.id} className="bg-white border rounded-lg p-4 hover:shadow-md transition cursor-pointer" onClick={() => handleViewTask(task)}>
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
@@ -385,13 +453,6 @@ const ProjectDetail = () => {
                     )}
                   </div>
                 </div>
-                <button 
-                  className="p-1 text-blue-600 hover:text-blue-800"
-                  onClick={() => handleEditTask(task)}
-                  title="Edit task"
-                >
-                  <FiEdit />
-                </button>
               </div>
             </div>
           ))}
@@ -591,6 +652,29 @@ const ProjectDetail = () => {
         users={teamMembers} // Pass team members as available users
         onSave={handleTaskSuccess}
       />
+
+             {/* Task Detail Modal */}
+       {showTaskDetail && selectedTask && (
+         <TaskDetail
+           task={selectedTask}
+           onClose={() => {
+             setShowTaskDetail(false);
+             setSelectedTask(null);
+           }}
+           onEdit={() => {
+             setEditingTask(selectedTask);
+             setShowTaskDetail(false);
+             setSelectedTask(null);
+             setIsTaskModalOpen(true);
+           }}
+           onDelete={handleTaskDelete}
+           onStatusUpdate={handleTaskStatusUpdate}
+           onProgressUpdate={handleTaskProgressUpdate}
+           onPriorityUpdate={handleTaskPriorityUpdate}
+           onAssign={handleTaskAssign}
+           users={users}
+         />
+       )}
 
       {/* Delete Milestone Confirmation Modal */}
       <DeleteConfirmationModal

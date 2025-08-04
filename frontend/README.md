@@ -2,6 +2,14 @@
 
 A modern React.js frontend for the Project Management System with real-time updates, responsive design, and comprehensive project management features. Built with **Vite** for lightning-fast development and optimal performance.
 
+## 🌐 Live Demo
+
+**🚀 Deployed Application**: [https://project-management-ui.up.railway.app/](https://project-management-ui.up.railway.app/)
+
+**📋 Demo Credentials**:
+- **Username**: `superadmin`
+- **Password**: `admin@123`
+
 ## 🚀 Features
 
 ### 📊 Dashboard
@@ -216,11 +224,19 @@ npm run lint
 ```
 
 ### Deployment Options
+- **🚀 Railway**: Currently deployed at [https://project-management-ui.up.railway.app/](https://project-management-ui.up.railway.app/)
 - **Netlify**: Static site hosting with Vite optimization
 - **Vercel**: React-optimized hosting with Vite support
 - **AWS S3**: Static website hosting
 - **Docker**: Containerized deployment
 - **GitHub Pages**: Free static hosting
+
+### Railway Deployment
+The application is currently deployed on Railway with the following configuration:
+- **Frontend URL**: https://project-management-ui.up.railway.app/
+- **Backend URL**: https://project-management-backend.up.railway.app/
+- **Auto-deployment**: Connected to GitHub repository
+- **Environment**: Production with optimized builds
 
 ## 🔄 Migration from Create React App
 

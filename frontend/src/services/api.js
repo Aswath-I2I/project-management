@@ -81,7 +81,6 @@ export const tasksAPI = {
   create: (taskData) => api.post('/tasks', taskData),
   update: (id, taskData) => api.put(`/tasks/${id}`, taskData),
   assign: (id, userId) => {
-    console.log('API assign called with:', { id, userId, type: typeof userId });
     return api.patch(`/tasks/${id}/assign`, { assigned_to: userId });
   },
   updateStatus: (id, status) => api.patch(`/tasks/${id}/status`, { status }),

@@ -282,7 +282,7 @@ class ProjectController {
       `SELECT r.name 
        FROM user_roles ur
        JOIN roles r ON ur.role_id = r.id
-       WHERE ur.user_id = $1 AND ur.project_id IS NULL
+       WHERE ur.user_id = $1
        LIMIT 1`,
       [userId]
     );

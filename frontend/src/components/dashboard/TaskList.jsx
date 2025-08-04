@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   FiClock, 
@@ -10,7 +9,7 @@ import {
 } from 'react-icons/fi';
 import { format } from 'date-fns';
 
-const TaskList = ({ tasks }) => {
+const TaskList = ({ tasks, onTaskClick }) => {
   const getStatusColor = (status) => {
     switch (status) {
       case 'completed':
@@ -49,6 +48,12 @@ const TaskList = ({ tasks }) => {
     return Math.min(Math.max(progress, 0), 100);
   };
 
+  const handleTaskClick = (task) => {
+    if (onTaskClick) {
+      onTaskClick(task);
+    }
+  };
+
   if (tasks.length === 0) {
     return (
       <div className="text-center py-8">
@@ -70,9 +75,9 @@ const TaskList = ({ tasks }) => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3, delay: index * 0.1 }}
         >
-          <Link
-            to={`/tasks/${task.id}`}
-            className="block p-4 rounded-lg border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all duration-200"
+          <div
+            onClick={() => handleTaskClick(task)}
+            className="block p-4 rounded-lg border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all duration-200 cursor-pointer"
           >
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
@@ -132,18 +137,18 @@ const TaskList = ({ tasks }) => {
                 )}
               </div>
             </div>
-          </Link>
+          </div>
         </motion.div>
       ))}
 
       {tasks.length > 0 && (
         <div className="pt-4 border-t border-gray-200">
-          <Link
-            to="/tasks"
+          <a
+            href="/tasks"
             className="text-sm text-primary-600 hover:text-primary-700 font-medium"
           >
             View all tasks →
-          </Link>
+          </a>
         </div>
       )}
     </div>

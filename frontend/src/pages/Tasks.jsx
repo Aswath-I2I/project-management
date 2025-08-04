@@ -39,19 +39,14 @@ const Tasks = () => {
     try {
       // Fetch all tasks the user has access to (not just assigned)
       const tasksResponse = await tasksAPI.getAll(filters);
-      console.log('Tasks response:', tasksResponse);
       setTasks(tasksResponse.data.data || []);
 
       // Fetch projects for filter dropdown
       const projectsResponse = await projectsAPI.getAll();
-      console.log('Projects response:', projectsResponse);
       setProjects(projectsResponse.data.data || []);
 
       // Fetch assignable users for assignment dropdown
-      console.log('Fetching assignable users...');
       const usersResponse = await teamAPI.getAssignableUsers();
-      console.log('Assignable users response:', usersResponse);
-      console.log('Users data:', usersResponse.data);
       setUsers(usersResponse.data.data || []);
 
       // Calculate stats
@@ -137,7 +132,6 @@ const Tasks = () => {
   };
 
   const handleAssignTask = async (taskId, userId) => {
-    console.log('Assigning task:', { taskId, userId, type: typeof userId });
     try {
       const response = await tasksAPI.assign(taskId, userId);
       const updatedTask = response.data.data;
