@@ -177,11 +177,8 @@ const TeamMemberModal = ({ isOpen, onClose, projectId, onSuccess }) => {
                 >
                   <option value="member">Member</option>
                   <option value="developer">Developer</option>
-                  <option value="designer">Designer</option>
-                  <option value="tester">Tester</option>
-                  <option value="analyst">Analyst</option>
+                  <option value="viewer">Viewer</option>
                   <option value="project_manager">Project Manager</option>
-                  <option value="team_lead">Team Lead</option>
                 </select>
                 {errors.role && (
                   <p className="mt-1 text-sm text-red-600 flex items-center">

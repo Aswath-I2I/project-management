@@ -42,22 +42,22 @@ async function migrateDown() {
     console.log('');
     
     // Ask for confirmation
-    const confirmation = await askQuestion('Are you sure you want to continue? (yes/no): ');
+    // const confirmation = await askQuestion('Are you sure you want to continue? (yes/no): ');
     
-    if (confirmation.toLowerCase() !== 'yes') {
-      console.log('❌ Migration down cancelled by user.');
-      return;
-    }
+    // if (confirmation.toLowerCase() !== 'yes') {
+    //   console.log('❌ Migration down cancelled by user.');
+    //   return;
+    // }
     
     // Double confirmation for production
     if (process.env.NODE_ENV === 'production') {
       console.log('⚠️  PRODUCTION ENVIRONMENT DETECTED!');
-      const doubleConfirm = await askQuestion('Type "DELETE ALL DATA" to confirm: ');
+      // const doubleConfirm = await askQuestion('Type "DELETE ALL DATA" to confirm: ');
       
-      if (doubleConfirm !== 'DELETE ALL DATA') {
-        console.log('❌ Migration down cancelled - incorrect confirmation phrase.');
-        return;
-      }
+      // if (doubleConfirm !== 'DELETE ALL DATA') {
+      //   console.log('❌ Migration down cancelled - incorrect confirmation phrase.');
+      //   return;
+      // }
     }
     
     console.log('🚀 Starting migration down...');

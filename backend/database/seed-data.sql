@@ -6,11 +6,11 @@
 -- ============================================================================
 
 -- Insert default roles
-INSERT INTO roles (id, name, description, permissions) VALUES
-('550e8400-e29b-41d4-a716-446655440001', 'admin', 'System Administrator', '{"all": true}'),
-('550e8400-e29b-41d4-a716-446655440002', 'project_manager', 'Project Manager', '{"projects": {"create": true, "read": true, "update": true, "delete": true}, "tasks": {"create": true, "read": true, "update": true, "delete": true}, "milestones": {"create": true, "read": true, "update": true, "delete": true}}'),
-('550e8400-e29b-41d4-a716-446655440003', 'developer', 'Developer', '{"tasks": {"create": true, "read": true, "update": true}, "milestones": {"read": true}}'),
-('550e8400-e29b-41d4-a716-446655440004', 'viewer', 'Viewer', '{"projects": {"read": true}, "tasks": {"read": true}, "milestones": {"read": true}}');
+INSERT INTO roles (id, name, description) VALUES
+('550e8400-e29b-41d4-a716-446655440001', 'admin', 'System Administrator'),
+('550e8400-e29b-41d4-a716-446655440002', 'project_manager', 'Project Manager'),
+('550e8400-e29b-41d4-a716-446655440003', 'developer', 'Developer'),
+('550e8400-e29b-41d4-a716-446655440004', 'viewer', 'Viewer');
 
 -- Insert sample users (password hash is 'password123' for all users)
 INSERT INTO users (id, username, email, password_hash, first_name, last_name, avatar_url, phone, is_active, is_verified) VALUES
@@ -90,16 +90,16 @@ INSERT INTO attachments (id, filename, original_filename, file_path, file_size, 
 ('dd0e8400-e29b-41d4-a716-446655440004', 'api_documentation.md', 'api_documentation.md', '/uploads/api_documentation.md', 51200, 'text/markdown', '660e8400-e29b-41d4-a716-446655440004', 'bb0e8400-e29b-41d4-a716-446655440005', NULL, NULL, NULL, '2024-05-05 16:00:00');
 
 -- Insert time logs
-INSERT INTO time_logs (id, user_id, task_id, project_id, description, hours_spent, date, start_time, end_time, is_billable, created_at) VALUES
-('ee0e8400-e29b-41d4-a716-446655440001', '660e8400-e29b-41d4-a716-446655440003', 'bb0e8400-e29b-41d4-a716-446655440001', '880e8400-e29b-41d4-a716-446655440001', 'Created initial wireframes for homepage and product pages', 4.5, '2024-02-10', '09:00:00', '13:30:00', true, '2024-02-10 13:30:00'),
-('ee0e8400-e29b-41d4-a716-446655440002', '660e8400-e29b-41d4-a716-446655440003', 'bb0e8400-e29b-41d4-a716-446655440001', '880e8400-e29b-41d4-a716-446655440001', 'Refined wireframes based on feedback', 3.0, '2024-02-11', '10:00:00', '13:00:00', true, '2024-02-11 13:00:00'),
-('ee0e8400-e29b-41d4-a716-446655440003', '660e8400-e29b-41d4-a716-446655440003', 'bb0e8400-e29b-41d4-a716-446655440002', '880e8400-e29b-41d4-a716-446655440001', 'Designed color palette and typography system', 6.0, '2024-02-15', '09:00:00', '15:00:00', true, '2024-02-15 15:00:00'),
-('ee0e8400-e29b-41d4-a716-446655440004', '660e8400-e29b-41d4-a716-446655440003', 'bb0e8400-e29b-41d4-a716-446655440003', '880e8400-e29b-41d4-a716-446655440001', 'Built responsive homepage component with React', 4.0, '2024-04-05', '09:00:00', '13:00:00', true, '2024-04-05 13:00:00'),
-('ee0e8400-e29b-41d4-a716-446655440005', '660e8400-e29b-41d4-a716-446655440004', 'bb0e8400-e29b-41d4-a716-446655440004', '880e8400-e29b-41d4-a716-446655440001', 'Implemented product catalog with filtering', 5.5, '2024-04-06', '10:00:00', '15:30:00', true, '2024-04-06 15:30:00'),
-('ee0e8400-e29b-41d4-a716-446655440006', '660e8400-e29b-41d4-a716-446655440004', 'bb0e8400-e29b-41d4-a716-446655440005', '880e8400-e29b-41d4-a716-446655440001', 'Developed JWT authentication endpoints', 4.0, '2024-05-05', '14:00:00', '18:00:00', true, '2024-05-05 18:00:00'),
-('ee0e8400-e29b-41d4-a716-446655440007', '660e8400-e29b-41d4-a716-446655440005', 'bb0e8400-e29b-41d4-a716-446655440008', '880e8400-e29b-41d4-a716-446655440002', 'Implemented user authentication for mobile app', 3.5, '2024-05-10', '09:00:00', '12:30:00', true, '2024-05-10 12:30:00'),
-('ee0e8400-e29b-41d4-a716-446655440008', '660e8400-e29b-41d4-a716-446655440004', 'bb0e8400-e29b-41d4-a716-446655440010', '880e8400-e29b-41d4-a716-446655440003', 'Analyzed existing database structure', 7.0, '2024-03-10', '08:00:00', '15:00:00', true, '2024-03-10 15:00:00'),
-('ee0e8400-e29b-41d4-a716-446655440009', '660e8400-e29b-41d4-a716-446655440001', 'bb0e8400-e29b-41d4-a716-446655440011', '880e8400-e29b-41d4-a716-446655440004', 'Conducted security penetration testing', 8.0, '2024-02-10', '09:00:00', '17:00:00', true, '2024-02-10 17:00:00');
+INSERT INTO time_logs (id, user_id, task_id, project_id, description, hours_spent, date, is_billable, created_at) VALUES
+('ee0e8400-e29b-41d4-a716-446655440001', '660e8400-e29b-41d4-a716-446655440003', 'bb0e8400-e29b-41d4-a716-446655440001', '880e8400-e29b-41d4-a716-446655440001', 'Created initial wireframes for homepage and product pages', 4.5, '2024-02-10', true, '2024-02-10 13:30:00'),
+('ee0e8400-e29b-41d4-a716-446655440002', '660e8400-e29b-41d4-a716-446655440003', 'bb0e8400-e29b-41d4-a716-446655440001', '880e8400-e29b-41d4-a716-446655440001', 'Refined wireframes based on feedback', 3.0, '2024-02-11', true, '2024-02-11 13:00:00'),
+('ee0e8400-e29b-41d4-a716-446655440003', '660e8400-e29b-41d4-a716-446655440003', 'bb0e8400-e29b-41d4-a716-446655440002', '880e8400-e29b-41d4-a716-446655440001', 'Designed color palette and typography system', 6.0, '2024-02-15', true, '2024-02-15 15:00:00'),
+('ee0e8400-e29b-41d4-a716-446655440004', '660e8400-e29b-41d4-a716-446655440003', 'bb0e8400-e29b-41d4-a716-446655440003', '880e8400-e29b-41d4-a716-446655440001', 'Built responsive homepage component with React', 4.0, '2024-04-05', true, '2024-04-05 13:00:00'),
+('ee0e8400-e29b-41d4-a716-446655440005', '660e8400-e29b-41d4-a716-446655440004', 'bb0e8400-e29b-41d4-a716-446655440004', '880e8400-e29b-41d4-a716-446655440001', 'Implemented product catalog with filtering', 5.5, '2024-04-06', true, '2024-04-06 15:30:00'),
+('ee0e8400-e29b-41d4-a716-446655440006', '660e8400-e29b-41d4-a716-446655440004', 'bb0e8400-e29b-41d4-a716-446655440005', '880e8400-e29b-41d4-a716-446655440001', 'Developed JWT authentication endpoints', 4.0, '2024-05-05', true, '2024-05-05 18:00:00'),
+('ee0e8400-e29b-41d4-a716-446655440007', '660e8400-e29b-41d4-a716-446655440005', 'bb0e8400-e29b-41d4-a716-446655440008', '880e8400-e29b-41d4-a716-446655440002', 'Implemented user authentication for mobile app', 3.5, '2024-05-10', true, '2024-05-10 12:30:00'),
+('ee0e8400-e29b-41d4-a716-446655440008', '660e8400-e29b-41d4-a716-446655440004', 'bb0e8400-e29b-41d4-a716-446655440010', '880e8400-e29b-41d4-a716-446655440003', 'Analyzed existing database structure', 7.0, '2024-03-10', true, '2024-03-10 15:00:00'),
+('ee0e8400-e29b-41d4-a716-446655440009', '660e8400-e29b-41d4-a716-446655440001', 'bb0e8400-e29b-41d4-a716-446655440011', '880e8400-e29b-41d4-a716-446655440004', 'Conducted security penetration testing', 8.0, '2024-02-10', true, '2024-02-10 17:00:00');
 
 -- Insert task watchers
 INSERT INTO task_watchers (id, task_id, user_id, created_at) VALUES

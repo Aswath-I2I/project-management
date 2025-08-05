@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS project_members (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     project_id UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    role VARCHAR(50) DEFAULT 'member' CHECK (role IN ('member', 'project_manager', 'admin')),
+    role VARCHAR(50) DEFAULT 'member' CHECK (role IN ('member', 'developer', 'project_manager', 'viewer', 'admin')),
     joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(project_id, user_id)
 );
@@ -238,10 +238,12 @@ CREATE TRIGGER update_time_logs_updated_at BEFORE UPDATE ON time_logs FOR EACH R
 -- ============================================================================
 
 -- Insert default roles
-INSERT INTO roles (name, description, permissions) VALUES
-('admin', 'System Administrator with full access', '{"all": true}'),
-('project_manager', 'Project Manager with project management capabilities', '{"projects": {"read": true, "write": true, "delete": true}, "tasks": {"read": true, "write": true, "delete": true}, "team": {"read": true, "write": true}}'),
-('member', 'Team Member with basic project access', '{"projects": {"read": true}, "tasks": {"read": true, "write": true}, "time_logs": {"read": true, "write": true}}')
+INSERT INTO roles (name, description) VALUES
+('admin', 'System Administrator with full access'),
+('project_manager', 'Project Manager with project management capabilities'),
+('member', 'Team Member with basic project access'),
+('viewer', 'Viewer with read-only access'),
+('developer', 'Developer with full access to tasks and projects')
 ON CONFLICT (name) DO NOTHING;
 
 -- Insert superadmin user (password: admin@123)

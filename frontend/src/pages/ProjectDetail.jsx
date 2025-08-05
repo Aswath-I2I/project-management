@@ -387,8 +387,8 @@ const ProjectDetail = () => {
                     </div>
                   </td>
                   <td className="px-4 py-2">
-                    <span className={`px-2 py-1 rounded-full text-xs ${getRoleColor(member.role)}`}>
-                      {getRoleDisplayName(member.role || 'member')}
+                    <span className={`px-2 py-1 rounded-full text-xs ${getRoleColor(member.project_role)}`}>
+                      {getRoleDisplayName(member.project_role || 'member')}
                     </span>
                   </td>
                   <td className="px-4 py-2 text-gray-600">{member.email}</td>
