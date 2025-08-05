@@ -359,7 +359,7 @@ const Profile = () => {
                     ) : (
                       <div className="flex items-center p-3 bg-gray-50 rounded-md">
                         <FiMail className="h-5 w-5 text-gray-400 mr-3" />
-                        <span className="text-gray-900">{user.email}</span>
+                        <span className="text-gray-900 break-all">{user.email}</span>
                       </div>
                     )}
                   </div>

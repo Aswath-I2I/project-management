@@ -111,7 +111,7 @@ const TaskAssignModal = ({ isOpen, onClose, task, users, currentAssignee, onAssi
                         <p className="font-medium text-gray-900">
                           {user.first_name} {user.last_name}
                         </p>
-                        <p className="text-sm text-gray-500">{user.email}</p>
+                        <p className="text-sm text-gray-500 break-all">{user.email}</p>
                       </div>
                       {currentAssignee?.id === user.id && (
                         <FiCheck className="ml-auto h-5 w-5 text-green-500" />
