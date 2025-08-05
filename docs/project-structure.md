@@ -299,7 +299,6 @@ docs/
 │   ├── backend.md            # Backend deployment guide
 │   ├── frontend.md           # Frontend deployment guide
 │   ├── database.md           # Database setup guide
-│   └── docker.md             # Docker deployment
 ├── development/
 │   ├── setup.md              # Development setup
 │   ├── coding-standards.md   # Code standards
